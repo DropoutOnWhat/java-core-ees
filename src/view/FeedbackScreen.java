@@ -13,7 +13,7 @@ public class FeedbackScreen extends JDialog {
     private JLabel feedbackLabel;
 
     public FeedbackScreen(List<String> feedback) {
-        setTitle("ATENÇÃO!");
+        setTitle("# PEDINTE PEDIDOS --> Aviso #");
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
@@ -55,7 +55,7 @@ public class FeedbackScreen extends JDialog {
 
     private void mostraFeedback(List<String> feedback) {
         DefaultTableModel model = new DefaultTableModel();
-        feedbackLabel.setText(this.getTitle());
+        feedbackLabel.setText("Atenção!");
         model.addColumn("feedback", feedback.toArray());
         errorTable.setModel(model);
     }

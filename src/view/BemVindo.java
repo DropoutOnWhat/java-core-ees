@@ -52,7 +52,7 @@ public class BemVindo extends JFrame {
     }
 
     private void init() {
-        setTitle("# PEDINTE PEDIDOS #");
+        setTitle("# PEDINTE PEDIDOS --> Bem Vindo! #");
         setBounds(600,300, 600,550);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setContentPane(mainPanel);

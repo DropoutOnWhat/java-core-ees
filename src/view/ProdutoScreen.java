@@ -147,7 +147,7 @@ public class ProdutoScreen extends JFrame {
     }
 
     private void init() {
-        setTitle("# PEDINTE PEDIDOS #");
+        setTitle("# PEDINTE PEDIDOS --> Gerenciar Produtos #");
         setBounds(600,300, 600,550);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setContentPane(mainPanel);

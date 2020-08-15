@@ -60,7 +60,7 @@ public class ComandaScreen extends JFrame {
     }
 
     private void init() {
-        setTitle("# PEDINTE PEDIDOS #");
+        setTitle("# PEDINTE PEDIDOS --> Comanda #");
         setBounds(600,300, 600,550);
         setContentPane(mainPanel);
         mainPanel.setBorder(new EmptyBorder(10, 10, 10, 10));

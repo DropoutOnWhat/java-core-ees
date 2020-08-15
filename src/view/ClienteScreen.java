@@ -72,7 +72,9 @@ public class ClienteScreen extends JFrame {
                 c.setSobrenome(sobrenomeField.getText());
                 c.setCpf(cpfField.getText());
                 if(StringUtils.isNullOrEmpty(idField.getText())) {
-                    salvarCliente(c);
+                    if(validaForm()) {
+                        salvarCliente(c);
+                    }
                 } else {
                     c.setId(Integer.valueOf(idField.getText()));
                     atualizarCliente(c);
@@ -100,6 +102,29 @@ public class ClienteScreen extends JFrame {
                 limpaFormulario();
             }
         });
+    }
+
+    private boolean validaForm() {
+        List<String> erros = new ArrayList<>();
+        if(StringUtils.isNullOrEmpty(nomeField.getText())) {
+            erros.add("Informe o nome do cliente!");
+        }
+        if(StringUtils.isNullOrEmpty(sobrenomeField.getText())) {
+            erros.add("Informe o sobrenome do cliente!");
+        }
+        if(StringUtils.isNullOrEmpty(cpfField.getText())) {
+            erros.add("Informe o CPF do cliente!");
+        } else if(!cpfField.getText().matches("[0-9]*")) {
+            erros.add("CPF deve conter apenas números!");
+        } else if(cpfField.getText().length() != 11) {
+            erros.add("CPF deve conter 11 dígitos!");
+        }
+        if(!erros.isEmpty()) {
+            FeedbackScreen screen = new FeedbackScreen(erros);
+            screen.setBounds(700,350, 380,180);
+            screen.setVisible(true);
+        }
+        return erros.isEmpty();
     }
 
     private void limpaFormulario() {
@@ -194,7 +219,7 @@ public class ClienteScreen extends JFrame {
     }
 
     private void init() {
-        setTitle("# PEDINTE PEDIDOS #");
+        setTitle("# PEDINTE PEDIDOS --> Gerenciar Clientes #");
         setBounds(600,300, 600,550);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setContentPane(mainPanel);
