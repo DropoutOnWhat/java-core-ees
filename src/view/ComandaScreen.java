@@ -1,7 +1,6 @@
 package view;
 
 import com.mysql.cj.util.StringUtils;
-import dao.ClienteDAO;
 import dao.PedidoDAO;
 import model.*;
 
