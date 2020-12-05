@@ -34,15 +34,15 @@ public class PedidoDAO {
 
     public Pedido createPedido(Pedido pedido) throws SQLException {
         Pedido p = createPedido(pedido.getCliente().getId());
-        removerItens(p.getId());
+        removeItens(p.getId());
         for(ItemDoPedido each : pedido.getItens()) {
             saveItem(each, p.getId());
         }
         return find(p.getId());
     }
 
-    public Pedido atualizarPedido(Pedido pedido) throws SQLException {
-        removerItens(pedido.getId());
+    public Pedido updatePedido(Pedido pedido) throws SQLException {
+        removeItens(pedido.getId());
         for(ItemDoPedido each : pedido.getItens()) {
             saveItem(each, pedido.getId());
         }
@@ -66,7 +66,7 @@ public class PedidoDAO {
         return false;
     }
 
-    public List<Pedido> fetchAll() throws Exception {
+    public List<Pedido> fetchAll() throws SQLException {
         this.connection = new ConnectionFactory().getConnection();
         String findAll = "SELECT p.id as pid, p.data AS data, " +
                 " c.id AS clienteId, c.nome as nomeCliente, c.sobrenome as sobrenome, c.cpf as cpf, " +
@@ -103,15 +103,15 @@ public class PedidoDAO {
                 pedidos.add(pedido);
             }
             return pedidos;
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
-            throw new Exception();
+            throw new SQLException();
         } finally {
             this.connection.close();
         }
     }
 
-    private void removerItens(int id) throws SQLException {
+    private void removeItens(int id) throws SQLException {
         this.connection = new ConnectionFactory().getConnection();
         String clearPedido = "DELETE FROM produto_pedido " +
                 "WHERE pedido_fk = ?";
