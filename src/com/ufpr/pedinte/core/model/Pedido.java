@@ -1,6 +1,7 @@
 package com.ufpr.pedinte.core.model;
 
-import java.sql.Date;
+
+import java.util.Date;
 import java.util.List;
 
 public class Pedido {
@@ -11,7 +12,6 @@ public class Pedido {
     private List<ItemDoPedido> itens;
 
     public Pedido() {
-
     }
 
     public Pedido(int id, Date data, Cliente cliente, List<ItemDoPedido> itens) {
