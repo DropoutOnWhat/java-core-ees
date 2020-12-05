@@ -27,6 +27,102 @@ public class PedidoDAO {
             return p;
         } catch (SQLException sqle) {
             throw new SQLException(sqle.getMessage());
+        } finally {
+            this.connection.close();
+        }
+    }
+
+    public Pedido createPedido(Pedido pedido) throws SQLException {
+        Pedido p = createPedido(pedido.getCliente().getId());
+        removerItens(p.getId());
+        for(ItemDoPedido each : pedido.getItens()) {
+            saveItem(each, p.getId());
+        }
+        return find(p.getId());
+    }
+
+    public Pedido atualizarPOedido(Pedido pedido) throws SQLException {
+        removerItens(pedido.getId());
+        for(ItemDoPedido each : pedido.getItens()) {
+            saveItem(each, pedido.getId());
+        }
+        return find(pedido.getId());
+    }
+
+    public boolean deletePedido(Pedido pedido) throws SQLException {
+        this.connection = new ConnectionFactory().getConnection();
+        String remove = "DELETE FROM pedido " +
+                "WHERE id = ?";
+        try {
+            PreparedStatement ps = connection.prepareStatement(remove);
+            ps.setInt(1, pedido.getId());
+            ps.execute();
+            return true;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } finally {
+            this.connection.close();
+        }
+        return false;
+    }
+
+    public List<Pedido> fetchAll() throws Exception {
+        this.connection = new ConnectionFactory().getConnection();
+        String findAll = "SELECT p.id as pid, p.data AS data, " +
+                " c.id AS clienteId, c.nome as nomeCliente, c.sobrenome as sobrenome, c.cpf as cpf, " +
+                "SUM(pp.quantidade) as quantidade " +
+                "FROM pedido p " +
+                "JOIN cliente c ON p.cliente_fk = c.id " +
+                "JOIN produto_pedido pp on p.id = pp.pedido_fk " +
+                "JOIN produto prd on pp.produto_fk = prd.id " +
+                "GROUP BY p.id ORDER BY p.id DESC";
+        try {
+            PreparedStatement itensStatement = connection.prepareStatement(findAll);
+            ResultSet rs = itensStatement.executeQuery();
+            List<Pedido> pedidos = new ArrayList<>();
+
+            while (rs.next()) {
+                Cliente cliente = new Cliente();
+                Pedido pedido = new Pedido();
+                ItemDoPedido item = new ItemDoPedido();
+                List<ItemDoPedido> itens = new ArrayList<>();
+
+                cliente.setId(rs.getInt("clienteId"));
+                cliente.setNome(rs.getString("nomeCliente"));
+                cliente.setSobrenome(rs.getString("sobrenome"));
+                cliente.setCpf(rs.getString("cpf"));
+
+                item.setQuantidade(rs.getInt("quantidade"));
+
+                pedido.setData(rs.getDate("data"));
+                pedido.setId(rs.getInt("pid"));
+                pedido.setItens(itens);
+                pedido.setCliente(cliente);
+
+                itens.add(item);
+                pedidos.add(pedido);
+            }
+            return pedidos;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception();
+        } finally {
+            this.connection.close();
+        }
+    }
+
+    private void removerItens(int id) throws SQLException {
+        this.connection = new ConnectionFactory().getConnection();
+        String clearPedido = "DELETE FROM produto_pedido " +
+                "WHERE pedido_fk = ?";
+        try {
+            PreparedStatement clearStatement = connection.prepareStatement(clearPedido);
+            clearStatement.setInt(1, id);
+            clearStatement.execute();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } finally {
+            this.connection.close();
         }
     }
 
@@ -102,6 +198,8 @@ public class PedidoDAO {
 
         } catch (SQLException throwables) {
             throwables.printStackTrace();
+        } finally {
+            this.connection.close();
         }
         return result;
     }
@@ -156,13 +254,13 @@ public class PedidoDAO {
         return resultList;
     }
 
-    public void saveItem(ItemDoPedido item, int comanda) throws SQLException {
+    public void saveItem(ItemDoPedido item, int pedido) throws SQLException {
         this.connection = new ConnectionFactory().getConnection();
         String add = "INSERT INTO produto_pedido (produto_fk, pedido_fk, quantidade) VALUES (?, ?, ?)";
         try {
             PreparedStatement ps = connection.prepareStatement(add);
             ps.setInt(1, item.getProduto().getId());
-            ps.setInt(2, comanda);
+            ps.setInt(2, pedido);
             ps.setInt(3, item.getQuantidade());
 
             ps.execute();
