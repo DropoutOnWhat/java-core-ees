@@ -1,5 +1,6 @@
 package com.ufpr.pedinte.core.dao;
 
+import com.ufpr.pedinte.core.model.Cliente;
 import com.ufpr.pedinte.core.model.ItemDoPedido;
 import com.ufpr.pedinte.core.model.Pedido;
 import com.ufpr.pedinte.core.model.Produto;
@@ -13,7 +14,7 @@ public class PedidoDAO {
 
     public Pedido createPedido(int clienteID) throws SQLException {
         this.connection = new ConnectionFactory().getConnection();
-        Pedido result = findPedido(clienteID, false);
+        Pedido result = findPedidoByClient(clienteID, false);
         if (result.getData() != null) {
             return result;
         }
@@ -22,14 +23,90 @@ public class PedidoDAO {
             PreparedStatement ps = connection.prepareStatement(insert);
             ps.setInt(1, clienteID);
             ps.execute();
-            Pedido p = findPedido(clienteID, true);
+            Pedido p = findPedidoByClient(clienteID, true);
             return p;
         } catch (SQLException sqle) {
             throw new SQLException(sqle.getMessage());
         }
     }
 
-    private Pedido findPedido(int clienteID, boolean closeConnection) throws SQLException {
+    private Pedido findPedidoById(int id) throws SQLException {
+        this.connection = new ConnectionFactory().getConnection();
+        Pedido result = new Pedido();
+        String find = "SELECT p.data, c.id, c.nome, c.sobrenome, c.cpf " +
+                "FROM pedido p " +
+                "JOIN cliente c ON p.cliente_fk = c.id " +
+                "WHERE p.id = ?";
+        try {
+            PreparedStatement ps = connection.prepareStatement(find);
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                result.setId(id);
+                result.setData(rs.getString("data"));
+                Cliente c = new Cliente();
+                c.setId(rs.getInt("id"));
+                c.setNome(rs.getString("nome"));
+                c.setSobrenome(rs.getString("sobrenome"));
+                c.setCpf(rs.getString("cpf"));
+                result.setCliente(c);
+            }
+        }  catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            this.connection.close();
+        }
+        return result;
+    }
+
+    public Pedido find(int id) throws SQLException {
+        this.connection = new ConnectionFactory().getConnection();
+        Pedido result = new Pedido();
+        String findOne = "SELECT p.data AS data," +
+                "c.id AS cid, c.nome, c.sobrenome, c.cpf," +
+                "prd.id AS proid, prd.descricao AS prodesc," +
+                "pp.quantidade " +
+                "FROM pedido p " +
+                "JOIN cliente c ON p.cliente_fk = c.id " +
+                "JOIN produto_pedido pp on p.id = pp.pedido_fk " +
+                "JOIN produto prd on pp.produto_fk = prd.id " +
+                "WHERE p.id = ?";
+        try {
+            PreparedStatement ps = connection.prepareStatement(findOne);
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            Cliente c = new Cliente();
+            List<ItemDoPedido> itens = new ArrayList<>();
+            if (rs.next()) {
+                c.setId(rs.getInt("clid"));
+                c.setNome(rs.getString("nome"));
+                c.setSobrenome(rs.getString("sobrenome"));
+                c.setCpf(rs.getString("cpf"));
+            }
+            rs.beforeFirst();
+            while (rs.next()) {
+                Produto p = new Produto();
+                p.setDescricao(rs.getString("prodesc"));
+                p.setId(rs.getInt("proid"));
+
+                ItemDoPedido each = new ItemDoPedido();
+                each.setProduto(p);
+                each.setQuantidade(rs.getInt(rs.getInt("quantidade")));
+                itens.add(each);
+            }
+            result.setId(id);
+            result.setData(rs.getDate("data"));
+            result.setCliente(c);
+            result.setItens(itens);
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return result;
+    }
+
+    private Pedido findPedidoByClient(int clienteID, boolean closeConnection) throws SQLException {
         this.connection = new ConnectionFactory().getConnection();
         Pedido result = new Pedido();
         String find = "SELECT id, data FROM pedido WHERE cliente_fk = ?";

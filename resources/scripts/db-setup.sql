@@ -1,4 +1,4 @@
-CREATE SCHEMA `pedido`;
+CREATE SCHEMA `pedinte`;
 
 CREATE TABLE `cliente` (
   `id` INT NOT NULL AUTO_INCREMENT,

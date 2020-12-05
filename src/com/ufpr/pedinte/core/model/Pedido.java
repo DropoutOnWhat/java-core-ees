@@ -1,11 +1,12 @@
 package com.ufpr.pedinte.core.model;
 
+import java.sql.Date;
 import java.util.List;
 
 public class Pedido {
 
     private int id;
-    private String data;
+    private Date data;
     private Cliente cliente;
     private List<ItemDoPedido> itens;
 
@@ -13,7 +14,7 @@ public class Pedido {
 
     }
 
-    public Pedido(int id, String data, Cliente cliente, List<ItemDoPedido> itens) {
+    public Pedido(int id, Date data, Cliente cliente, List<ItemDoPedido> itens) {
         this.id = id;
         this.data = data;
         this.cliente = cliente;
@@ -28,11 +29,11 @@ public class Pedido {
         this.id = id;
     }
 
-    public String getData() {
+    public Date getData() {
         return data;
     }
 
-    public void setData(String data) {
+    public void setData(Date data) {
         this.data = data;
     }
 
@@ -50,5 +51,8 @@ public class Pedido {
 
     public void setItens(List<ItemDoPedido> itens) {
         this.itens = itens;
+    }
+
+    public void setData(String data) {
     }
 }

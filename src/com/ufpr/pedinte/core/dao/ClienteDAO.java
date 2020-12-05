@@ -1,7 +1,6 @@
 package com.ufpr.pedinte.core.dao;
 
 import com.ufpr.pedinte.core.model.Cliente;
-import org.jetbrains.annotations.NotNull;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,7 +13,7 @@ public class ClienteDAO {
 
     private Connection connection;
 
-    public boolean createCliente(@NotNull Cliente c) throws SQLException {
+    public boolean createCliente(Cliente c) throws SQLException {
         boolean result = false;
         this.connection = new ConnectionFactory().getConnection();
         String insert = "INSERT INTO cliente (cpf, nome, sobrenome) VALUES (?,?,?)";

@@ -1,7 +1,6 @@
 package com.ufpr.pedinte.core.dao;
 
 import com.ufpr.pedinte.core.model.Produto;
-import org.jetbrains.annotations.NotNull;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,7 +12,7 @@ import java.util.List;
 public class ProdutoDAO {
     private Connection connection;
 
-    public boolean createProduto(@NotNull Produto p) throws SQLException {
+    public boolean createProduto(Produto p) throws SQLException {
         boolean result = false;
         this.connection = new ConnectionFactory().getConnection();
         String insert = "INSERT INTO produto (descricao) VALUES (?)";
@@ -46,7 +45,7 @@ public class ProdutoDAO {
         return result;
     }
 
-    public boolean updateProduto(@NotNull Produto p) throws SQLException {
+    public boolean updateProduto(Produto p) throws SQLException {
         boolean result = false;
         this.connection = new ConnectionFactory().getConnection();
         String update = "UPDATE produto SET descricao = ? WHERE id = ?";
@@ -64,7 +63,7 @@ public class ProdutoDAO {
         return result;
     }
 
-    public boolean removeProduto(@NotNull Produto p) throws SQLException {
+    public boolean removeProduto(Produto p) throws SQLException {
         boolean result = false;
         this.connection = new ConnectionFactory().getConnection();
         String delete = "DELETE FROM produto WHERE id = ?";
