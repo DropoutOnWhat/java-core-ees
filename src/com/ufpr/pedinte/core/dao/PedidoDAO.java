@@ -41,7 +41,7 @@ public class PedidoDAO {
         return find(p.getId());
     }
 
-    public Pedido atualizarPOedido(Pedido pedido) throws SQLException {
+    public Pedido atualizarPedido(Pedido pedido) throws SQLException {
         removerItens(pedido.getId());
         for(ItemDoPedido each : pedido.getItens()) {
             saveItem(each, pedido.getId());
