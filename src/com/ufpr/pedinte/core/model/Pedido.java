@@ -1,6 +1,5 @@
 package com.ufpr.pedinte.core.model;
 
-
 import java.util.Date;
 import java.util.List;
 

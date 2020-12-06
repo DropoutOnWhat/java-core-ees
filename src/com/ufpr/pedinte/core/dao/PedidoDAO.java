@@ -12,6 +12,16 @@ import java.util.List;
 public class PedidoDAO {
     private Connection connection;
 
+    public Pedido createPedido(Pedido pedido) throws SQLException {
+        Pedido p = createPedido(pedido.getCliente().getId());
+        if (pedido.getItens() != null) {
+            for (ItemDoPedido each : pedido.getItens()) {
+                saveItem(each, p.getId());
+            }
+        }
+        return find(p.getId());
+    }
+
     public Pedido createPedido(int clienteID) throws SQLException {
         this.connection = new ConnectionFactory().getConnection();
         Pedido result = findPedidoByClient(clienteID, false);
@@ -30,15 +40,6 @@ public class PedidoDAO {
         } finally {
             this.connection.close();
         }
-    }
-
-    public Pedido createPedido(Pedido pedido) throws SQLException {
-        Pedido p = createPedido(pedido.getCliente().getId());
-        removeItens(p.getId());
-        for(ItemDoPedido each : pedido.getItens()) {
-            saveItem(each, p.getId());
-        }
-        return find(p.getId());
     }
 
     public Pedido updatePedido(Pedido pedido) throws SQLException {
@@ -173,26 +174,25 @@ public class PedidoDAO {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             Cliente c = new Cliente();
+            Produto p = new Produto();
+            ItemDoPedido each = new ItemDoPedido();
             List<ItemDoPedido> itens = new ArrayList<>();
             if (rs.next()) {
-                c.setId(rs.getInt("clid"));
+                c.setId(rs.getInt("cid"));
                 c.setNome(rs.getString("nome"));
                 c.setSobrenome(rs.getString("sobrenome"));
                 c.setCpf(rs.getString("cpf"));
-            }
-            rs.beforeFirst();
-            while (rs.next()) {
-                Produto p = new Produto();
+
                 p.setDescricao(rs.getString("prodesc"));
                 p.setId(rs.getInt("proid"));
 
-                ItemDoPedido each = new ItemDoPedido();
                 each.setProduto(p);
                 each.setQuantidade(rs.getInt(rs.getInt("quantidade")));
                 itens.add(each);
+
+                result.setData(rs.getDate("data"));
             }
             result.setId(id);
-            result.setData(rs.getDate("data"));
             result.setCliente(c);
             result.setItens(itens);
 
